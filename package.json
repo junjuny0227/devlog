@@ -1,0 +1,28 @@
+{
+  "name": "devlog",
+  "version": "1.0.0",
+  "description": "A lightweight frontend logger that runs only in local/dev environments.",
+  "license": "MIT",
+  "author": "junjuny",
+  "homepage": "https://github.com/junjuny0227/devlog#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/junjuny0227/devlog.git"
+  },
+  "bugs": {
+    "url": "https://github.com/junjuny0227/devlog/issues"
+  },
+  "keywords": [
+    "logger",
+    "logging",
+    "frontend",
+    "console",
+    "debug",
+    "dev",
+    "development",
+    "local"
+  ],
+  "main": "index.js",
+  "scripts": {},
+  "packageManager": "pnpm@10.26.0"
+}
