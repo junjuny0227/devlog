@@ -22,7 +22,7 @@ export interface LoggerOptions {
 
   /**
    * 로그 출력 앞에 붙을 prefix
-   * @default '[devlog]'
+   * @default '[develog]'
    */
   prefix?: string;
 

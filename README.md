@@ -1,4 +1,4 @@
-# devlog
+# develog
 
 A lightweight frontend logger that runs only in local/dev environments.
 
@@ -16,11 +16,11 @@ A lightweight frontend logger that runs only in local/dev environments.
 ## Installation
 
 ```bash
-npm install devlog
+npm install develog
 # or
-yarn add devlog
+yarn add develog
 # or
-pnpm add devlog
+pnpm add develog
 ```
 
 ## Quick Start
@@ -28,22 +28,22 @@ pnpm add devlog
 ### Basic Usage
 
 ```typescript
-import { devlog } from 'devlog';
+import { develog } from 'develog';
 
 // 환경이 자동으로 감지되고, local/dev/stage에서만 로그가 출력됩니다
-devlog.log('안녕하세요!');
-devlog.info('정보 메시지');
-devlog.warn('경고 메시지');
-devlog.error('에러 메시지');
-devlog.debug('디버그 정보');
+develog.log('안녕하세요!');
+develog.info('정보 메시지');
+develog.warn('경고 메시지');
+develog.error('에러 메시지');
+develog.debug('디버그 정보');
 ```
 
 ### 커스텀 인스턴스
 
 ```typescript
-import { Devlog } from 'devlog';
+import { Develog } from 'develog';
 
-const logger = new Devlog({
+const logger = new Develog({
   prefix: '[MyApp]',
   enabledEnvironments: ['local', 'dev', 'stage'],
   customHostnamePatterns: {
@@ -57,7 +57,7 @@ logger.log('커스텀 로거 사용');
 
 ## Environment Detection
 
-devlog는 다음과 같이 환경을 자동으로 감지합니다:
+develog는 다음과 같이 환경을 자동으로 감지합니다:
 
 | 환경           | 기본 패턴                                  | 예시                  |
 | -------------- | ------------------------------------------ | --------------------- |
@@ -71,62 +71,62 @@ devlog는 다음과 같이 환경을 자동으로 감지합니다:
 ### Logging Methods
 
 ```typescript
-devlog.log(...args: unknown[]): void
-devlog.info(...args: unknown[]): void
-devlog.warn(...args: unknown[]): void
-devlog.error(...args: unknown[]): void
-devlog.debug(...args: unknown[]): void
+develog.log(...args: unknown[]): void
+develog.info(...args: unknown[]): void
+develog.warn(...args: unknown[]): void
+develog.error(...args: unknown[]): void
+develog.debug(...args: unknown[]): void
 ```
 
 ### Group Logging
 
 ```typescript
-devlog.group(label?: string): void
-devlog.groupCollapsed(label?: string): void
-devlog.groupEnd(): void
+develog.group(label?: string): void
+develog.groupCollapsed(label?: string): void
+develog.groupEnd(): void
 ```
 
 Example:
 
 ```typescript
-devlog.group('사용자 정보');
-devlog.log('이름: 홍길동');
-devlog.log('이메일: hong@example.com');
-devlog.groupEnd();
+develog.group('사용자 정보');
+develog.log('이름: 홍길동');
+develog.log('이메일: hong@example.com');
+develog.groupEnd();
 ```
 
 ### Advanced Features
 
 ```typescript
 // 테이블 출력
-devlog.table(data: unknown): void
+develog.table(data: unknown): void
 
 // 시간 측정
-devlog.time(label: string): void
-devlog.timeEnd(label: string): void
+develog.time(label: string): void
+develog.timeEnd(label: string): void
 
 // 카운트
-devlog.count(label?: string): void
-devlog.countReset(label?: string): void
+develog.count(label?: string): void
+develog.countReset(label?: string): void
 
 // 콘솔 지우기
-devlog.clear(): void
+develog.clear(): void
 ```
 
 Example:
 
 ```typescript
 // 시간 측정
-devlog.time('API 호출');
+develog.time('API 호출');
 await fetchData();
-devlog.timeEnd('API 호출');
+develog.timeEnd('API 호출');
 
 // 테이블 출력
 const users = [
   { id: 1, name: '김철수' },
   { id: 2, name: '이영희' },
 ];
-devlog.table(users);
+develog.table(users);
 ```
 
 ### Configuration Options
@@ -141,7 +141,7 @@ interface LoggerOptions {
     [key in Environment]?: RegExp;
   };
 
-  // 로그 prefix (기본값: '[devlog]')
+  // 로그 prefix (기본값: '[develog]')
   prefix?: string;
 
   // 강제로 환경 설정 (자동 감지 무시)
@@ -154,27 +154,27 @@ interface LoggerOptions {
 ### React
 
 ```typescript
-import { devlog } from 'devlog';
+import { develog } from 'develog';
 import { useEffect } from 'react';
 
 function App() {
   useEffect(() => {
-    devlog.info('App 컴포넌트 마운트됨');
+    develog.info('App 컴포넌트 마운트됨');
 
     return () => {
-      devlog.info('App 컴포넌트 언마운트됨');
+      develog.info('App 컴포넌트 언마운트됨');
     };
   }, []);
 
   const handleClick = async () => {
-    devlog.time('API 호출');
+    develog.time('API 호출');
     try {
       const data = await fetchData();
-      devlog.log('데이터:', data);
+      develog.log('데이터:', data);
     } catch (error) {
-      devlog.error('에러:', error);
+      develog.error('에러:', error);
     } finally {
-      devlog.timeEnd('API 호출');
+      develog.timeEnd('API 호출');
     }
   };
 
@@ -185,20 +185,20 @@ function App() {
 ### Vue
 
 ```typescript
-import { devlog } from 'devlog';
+import { develog } from 'develog';
 import { onMounted } from 'vue';
 
 export default {
   setup() {
     onMounted(() => {
-      devlog.info('컴포넌트 마운트됨');
+      develog.info('컴포넌트 마운트됨');
     });
 
     const handleSubmit = () => {
-      devlog.group('폼 제출');
-      devlog.log('검증 시작...');
+      develog.group('폼 제출');
+      develog.log('검증 시작...');
       // 폼 처리 로직
-      devlog.groupEnd();
+      develog.groupEnd();
     };
 
     return { handleSubmit };
@@ -209,9 +209,9 @@ export default {
 ### API 호출 로깅
 
 ```typescript
-import { Devlog } from 'devlog';
+import { Develog } from 'develog';
 
-const apiLogger = new Devlog({ prefix: '[API]' });
+const apiLogger = new Develog({ prefix: '[API]' });
 
 async function fetchUser(id: string) {
   apiLogger.time(`fetchUser-${id}`);

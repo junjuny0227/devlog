@@ -2,9 +2,9 @@ import { detectEnvironment } from './environment';
 import type { Environment, LoggerOptions, LogLevel } from './types';
 
 /**
- * Devlog - 브라우저 환경 기반 로거
+ * develog - 브라우저 환경 기반 로거
  */
-export class Devlog {
+export class Develog {
   private readonly environment: Environment;
   private readonly enabledEnvironments: Set<Environment>;
   private readonly prefix: string;
@@ -14,7 +14,7 @@ export class Devlog {
     const {
       enabledEnvironments = ['local', 'dev', 'stage'],
       customHostnamePatterns,
-      prefix = '[devlog]',
+      prefix = '[develog]',
       forceEnvironment,
     } = options;
 
@@ -184,4 +184,4 @@ export class Devlog {
 /**
  * 기본 인스턴스 생성 및 export
  */
-export const devlog = new Devlog();
+export const develog = new Develog();
