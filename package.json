@@ -23,7 +23,9 @@
     "local"
   ],
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "format": "prettier --write ."
+  },
   "packageManager": "pnpm@10.26.0",
   "devDependencies": {
     "prettier": "^3.7.4"
