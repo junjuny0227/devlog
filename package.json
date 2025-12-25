@@ -1,5 +1,5 @@
 {
-  "name": "devlog",
+  "name": "@junjuny/devlog",
   "version": "1.0.0",
   "description": "A lightweight frontend logger that runs only in local/dev environments.",
   "license": "MIT",
