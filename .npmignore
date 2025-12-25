@@ -1,5 +1,6 @@
 # Source files
 src/
+examples/
 tests/
 __tests__/
 
@@ -10,13 +11,19 @@ __tests__/
 .husky/
 .editorconfig
 .prettierrc
+.prettierignore
 .eslintrc*
 tsconfig.json
+tsup.config.ts
 jest.config.js
 
 # Package manager
 pnpm-lock.yaml
 pnpm-workspace.yaml
+
+# Development files
+*.log
+.DS_Store
 
 # Logs
 *.log

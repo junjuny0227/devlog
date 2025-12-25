@@ -12,6 +12,11 @@
 /lib
 /out
 
+# typescript
+*.tsbuildinfo
+*.d.ts
+!src/**/*.d.ts
+
 # misc
 .DS_Store
 *.pem
@@ -29,8 +34,3 @@ yarn-error.log*
 # IDEs
 .vscode/
 .idea/
-
-# typescript
-*.tsbuildinfo
-
-# *.d.ts
