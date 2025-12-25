@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Devlog 예제</title>
+    <style>
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      h1 {
+        color: #333;
+      }
+      .section {
+        margin: 30px 0;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      button {
+        margin: 5px;
+        padding: 10px 20px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid #007bff;
+        background: #007bff;
+        color: white;
+        border-radius: 4px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .info {
+        background: #e7f3ff;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
+      code {
+        background: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🚀 Devlog 예제</h1>
+
+    <div class="info">
+      <strong>현재 환경:</strong> <span id="environment">감지 중...</span><br />
+      <strong>로깅 활성화:</strong> <span id="enabled">확인 중...</span><br />
+      <small>💡 브라우저 콘솔을 열어서 로그를 확인하세요!</small>
+    </div>
+
+    <div class="section">
+      <h2>기본 로깅</h2>
+      <button onclick="testLog()">log()</button>
+      <button onclick="testInfo()">info()</button>
+      <button onclick="testWarn()">warn()</button>
+      <button onclick="testError()">error()</button>
+      <button onclick="testDebug()">debug()</button>
+    </div>
+
+    <div class="section">
+      <h2>그룹 로깅</h2>
+      <button onclick="testGroup()">group()</button>
+      <button onclick="testGroupCollapsed()">groupCollapsed()</button>
+    </div>
+
+    <div class="section">
+      <h2>고급 기능</h2>
+      <button onclick="testTable()">table()</button>
+      <button onclick="testTime()">time()</button>
+      <button onclick="testCount()">count()</button>
+      <button onclick="testClear()">clear()</button>
+    </div>
+
+    <div class="section">
+      <h2>커스텀 인스턴스</h2>
+      <button onclick="testCustomLogger()">커스텀 Logger</button>
+      <button onclick="testForcedProduction()">Production 강제 설정</button>
+    </div>
+
+    <script type="module">
+      // devlog를 전역으로 사용할 수 있도록 설정
+      // 빌드된 ESM 파일을 import
+      import { Devlog, devlog, detectEnvironment } from '../dist/index.js';
+
+      // 전역으로 설정
+      window.Devlog = Devlog;
+      window.devlog = devlog;
+      window.detectEnvironment = detectEnvironment;
+
+      // 환경 정보 표시
+      document.getElementById('environment').textContent = devlog.getEnvironment();
+      document.getElementById('enabled').textContent = devlog.isLoggingEnabled()
+        ? '✅ 활성화'
+        : '❌ 비활성화';
+
+      // 테스트 함수들을 전역으로
+      window.testLog = () => {
+        devlog.log('기본 로그 메시지입니다.');
+        devlog.log('여러 인자를', '함께 전달할 수', '있습니다.', { data: 'object' });
+      };
+
+      window.testInfo = () => {
+        devlog.info('정보 메시지입니다.', { userId: 123, action: 'login' });
+      };
+
+      window.testWarn = () => {
+        devlog.warn('경고 메시지입니다. 주의가 필요합니다!');
+      };
+
+      window.testError = () => {
+        devlog.error('에러 메시지입니다!', new Error('테스트 에러'));
+      };
+
+      window.testDebug = () => {
+        devlog.debug('디버그 정보:', { timestamp: Date.now(), memory: performance.memory });
+      };
+
+      window.testGroup = () => {
+        devlog.group('사용자 정보');
+        devlog.log('이름: 홍길동');
+        devlog.log('이메일: hong@example.com');
+        devlog.log('역할: 개발자');
+        devlog.groupEnd();
+      };
+
+      window.testGroupCollapsed = () => {
+        devlog.groupCollapsed('API 요청 상세');
+        devlog.log('URL: https://api.example.com/users');
+        devlog.log('Method: GET');
+        devlog.log('Headers:', { 'Content-Type': 'application/json' });
+        devlog.groupEnd();
+      };
+
+      window.testTable = () => {
+        const users = [
+          { id: 1, name: '김철수', role: 'Admin' },
+          { id: 2, name: '이영희', role: 'User' },
+          { id: 3, name: '박민수', role: 'User' },
+        ];
+        devlog.table(users);
+      };
+
+      window.testTime = () => {
+        devlog.time('API 호출');
+        // 비동기 작업 시뮬레이션
+        setTimeout(() => {
+          devlog.timeEnd('API 호출');
+        }, 1000);
+        devlog.info('1초 후 시간이 측정됩니다...');
+      };
+
+      window.testCount = () => {
+        devlog.count('버튼 클릭');
+        devlog.count('버튼 클릭');
+        devlog.count('버튼 클릭');
+        devlog.info('3번 클릭했습니다. 카운트를 초기화하려면 다시 클릭하세요.');
+        setTimeout(() => devlog.countReset('버튼 클릭'), 2000);
+      };
+
+      window.testClear = () => {
+        devlog.log('콘솔을 지웁니다...');
+        setTimeout(() => devlog.clear(), 1000);
+      };
+
+      window.testCustomLogger = () => {
+        const customLogger = new Devlog({
+          prefix: '[CustomApp]',
+          enabledEnvironments: ['local', 'dev', 'stage', 'production'],
+        });
+        customLogger.info('커스텀 prefix를 사용하는 로거입니다.');
+        customLogger.log('모든 환경에서 활성화되어 있습니다.');
+      };
+
+      window.testForcedProduction = () => {
+        const prodLogger = new Devlog({
+          forceEnvironment: 'production',
+          enabledEnvironments: ['local', 'dev'],
+        });
+        prodLogger.warn('이 메시지는 production 환경으로 강제 설정되어 보이지 않습니다.');
+        devlog.info('위 메시지가 보이지 않는다면 정상입니다. (production은 비활성화됨)');
+      };
+
+      // 초기 메시지
+      devlog.log('👋 Devlog가 초기화되었습니다!');
+      devlog.info(`현재 환경: ${devlog.getEnvironment()}`);
+      devlog.info(`로깅 활성화: ${devlog.isLoggingEnabled()}`);
+    </script>
+  </body>
+</html>
