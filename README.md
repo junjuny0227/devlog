@@ -8,6 +8,8 @@ A lightweight frontend logger that runs only in local/dev environments.
 
 - 자동 환경 감지: 브라우저의 hostname/IP로 실행 환경 자동 판별
 - 선택적 로깅: dev/stage/local 환경에서만 로깅 활성화 (프로덕션에서는 자동 비활성화)
+- 네임스페이스 & 필터링: 로그를 카테고리별로 분류하고 선택적으로 활성화 (와일드카드 패턴 지원)
+- 타임스탬프: 4가지 포맷으로 로그에 시간 정보 추가 (time, datetime, iso, ms)
 - 풍부한 API: console의 모든 기능 지원 (log, info, warn, error, debug, group, table 등)
 - 경량: 의존성 없는 순수 TypeScript 구현
 - 커스터마이징: 환경 패턴, prefix, 활성화 환경 등 유연한 설정
@@ -156,6 +158,13 @@ interface LoggerOptions {
   // - 'iso': ISO 8601 형식
   // - 'ms': Unix timestamp (밀리초)
   timestampFormat?: 'time' | 'datetime' | 'iso' | 'ms';
+
+  // 활성화할 네임스페이스 목록
+  // - ['API', 'DB']: API와 DB 네임스페이스만 활성화
+  // - ['API:*']: API로 시작하는 모든 네임스페이스 활성화 (와일드카드)
+  // - ['*']: 모든 네임스페이스 활성화
+  // - undefined 또는 []: 모든 네임스페이스 활성화 (기본값)
+  enabledNamespaces?: string[];
 }
 ```
 
@@ -194,6 +203,98 @@ const logger = new Develog({
 });
 logger.error('에러');
 // [develog] [1735226445123] 에러
+```
+
+### Namespace & Filtering
+
+네임스페이스를 사용하여 로그를 카테고리별로 분류하고, 필요한 로그만 선택적으로 활성화할 수 있습니다:
+
+```typescript
+import { Develog } from 'develog';
+
+// 기본 네임스페이스 사용
+const logger = new Develog();
+
+const apiLogger = logger.namespace('API');
+const dbLogger = logger.namespace('DB');
+const cacheLogger = logger.namespace('Cache');
+
+apiLogger.log('API 요청 시작'); // [develog]:API API 요청 시작
+dbLogger.log('DB 쿼리 실행'); // [develog]:DB DB 쿼리 실행
+cacheLogger.log('캐시 조회'); // [develog]:Cache 캐시 조회
+
+// 특정 네임스페이스만 활성화
+const logger = new Develog({
+  enabledNamespaces: ['API', 'DB'], // Cache는 비활성화
+});
+
+const apiLogger = logger.namespace('API');
+const dbLogger = logger.namespace('DB');
+const cacheLogger = logger.namespace('Cache');
+
+apiLogger.log('보임'); // [develog]:API 보임
+dbLogger.log('보임'); // [develog]:DB 보임
+cacheLogger.log('숨김'); // 출력되지 않음
+
+// 와일드카드 패턴 사용
+const logger = new Develog({
+  enabledNamespaces: ['API:*'], // API로 시작하는 모든 네임스페이스
+});
+
+const apiLogger = logger.namespace('API');
+const userApiLogger = apiLogger.namespace('User'); // API:User
+const productApiLogger = apiLogger.namespace('Product'); // API:Product
+const dbLogger = logger.namespace('DB');
+
+apiLogger.log('보임'); // [develog]:API 보임
+userApiLogger.log('보임'); // [develog]:API:User 보임
+productApiLogger.log('보임'); // [develog]:API:Product 보임
+dbLogger.log('숨김'); // 출력되지 않음
+
+// 모든 네임스페이스 활성화
+const logger = new Develog({
+  enabledNamespaces: ['*'],
+});
+
+// 계층 구조 지원
+const logger = new Develog();
+const apiLogger = logger.namespace('API');
+const userApiLogger = apiLogger.namespace('User');
+const productApiLogger = apiLogger.namespace('Product');
+
+userApiLogger.log('사용자 조회'); // [develog]:API:User 사용자 조회
+productApiLogger.log('상품 조회'); // [develog]:API:Product 상품 조회
+```
+
+**네임스페이스 사용 시나리오:**
+
+```typescript
+// 디버깅 시 특정 모듈만 활성화
+const logger = new Develog({
+  enabledNamespaces: ['API'], // API 로그만 보기
+});
+
+// 여러 모듈 동시 활성화
+const logger = new Develog({
+  enabledNamespaces: ['API', 'DB', 'Cache'],
+});
+
+// 와일드카드로 패턴 매칭
+const logger = new Develog({
+  enabledNamespaces: ['API:*'], // API 하위 모든 네임스페이스
+});
+
+// 타임스탬프와 함께 사용
+const logger = new Develog({
+  showTimestamp: true,
+  timestampFormat: 'time',
+  enabledNamespaces: ['API:*'],
+});
+
+const apiLogger = logger.namespace('API');
+const userLogger = apiLogger.namespace('User');
+userLogger.log('요청 처리');
+// [develog]:API:User [15:30:45] 요청 처리
 ```
 
 ## Examples
@@ -276,6 +377,55 @@ async function fetchUser(id: string) {
     apiLogger.timeEnd(`fetchUser-${id}`);
   }
 }
+```
+
+### 네임스페이스를 활용한 모듈별 로깅
+
+```typescript
+import { Develog } from 'develog';
+
+// 디버깅 시 API 로그만 활성화
+const logger = new Develog({
+  enabledNamespaces: ['API:*'], // API 하위 모든 네임스페이스만 활성화
+  showTimestamp: true,
+});
+
+// API 모듈
+const apiLogger = logger.namespace('API');
+const userApiLogger = apiLogger.namespace('User');
+const productApiLogger = apiLogger.namespace('Product');
+
+// DB 모듈
+const dbLogger = logger.namespace('DB');
+const queryLogger = dbLogger.namespace('Query');
+
+// Cache 모듈
+const cacheLogger = logger.namespace('Cache');
+
+// 사용 예시
+async function getUser(id: string) {
+  userApiLogger.log('사용자 조회 시작', { id });
+
+  // DB 로그는 출력되지 않음 (enabledNamespaces: ['API:*'])
+  queryLogger.log('SELECT * FROM users WHERE id = ?', id);
+
+  const cachedUser = getCachedUser(id);
+  if (cachedUser) {
+    cacheLogger.log('캐시 히트', { id }); // 출력되지 않음
+    return cachedUser;
+  }
+
+  const user = await fetchUserFromDB(id);
+  userApiLogger.info('사용자 조회 완료', user); // ✅ 출력됨
+  return user;
+}
+
+// 프로덕션 배포 시: enabledNamespaces를 빈 배열로 설정하거나
+// 환경 변수로 관리하여 선택적 로깅 가능
+const prodLogger = new Develog({
+  enabledEnvironments: ['local', 'dev'], // 프로덕션에서는 자동 비활성화
+  enabledNamespaces: process.env.DEBUG_NAMESPACES?.split(',') || [],
+});
 ```
 
 ## Development

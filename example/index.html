@@ -97,6 +97,15 @@
       <button onclick="testTimestampMs()">ms 포맷</button>
     </div>
 
+    <div class="section">
+      <h2>네임스페이스 & 필터링</h2>
+      <button onclick="testNamespaceBasic()">기본 네임스페이스</button>
+      <button onclick="testNamespaceFiltering()">필터링 (API만)</button>
+      <button onclick="testNamespaceWildcard()">와일드카드 (API:*)</button>
+      <button onclick="testNamespaceHierarchy()">계층 구조</button>
+      <button onclick="testNamespaceWithTimestamp()">타임스탬프 통합</button>
+    </div>
+
     <script type="module">
       // develog를 전역으로 사용할 수 있도록 설정
       // 빌드된 ESM 파일을 import
@@ -234,6 +243,85 @@
         });
         logger.log('ms 포맷 - Unix timestamp (밀리초)');
         logger.info('1970년 1월 1일부터의 밀리초입니다.');
+      };
+
+      // 네임스페이스 테스트
+      window.testNamespaceBasic = () => {
+        develog.info('=== 기본 네임스페이스 데모 ===');
+        const logger = new Develog();
+
+        const apiLogger = logger.namespace('API');
+        const dbLogger = logger.namespace('DB');
+        const cacheLogger = logger.namespace('Cache');
+
+        apiLogger.log('API 요청 시작');
+        dbLogger.log('DB 쿼리 실행');
+        cacheLogger.log('캐시 조회');
+        develog.info('✅ 세 가지 네임스페이스 로그가 모두 출력됩니다.');
+      };
+
+      window.testNamespaceFiltering = () => {
+        develog.info('=== 네임스페이스 필터링 데모 (API만 활성화) ===');
+        const logger = new Develog({
+          enabledNamespaces: ['API'],
+        });
+
+        const apiLogger = logger.namespace('API');
+        const dbLogger = logger.namespace('DB');
+        const cacheLogger = logger.namespace('Cache');
+
+        apiLogger.log('✅ API 로그는 보입니다');
+        dbLogger.log('❌ DB 로그는 숨겨집니다');
+        cacheLogger.log('❌ Cache 로그는 숨겨집니다');
+        develog.info('✅ API 로그만 출력되었습니다.');
+      };
+
+      window.testNamespaceWildcard = () => {
+        develog.info('=== 와일드카드 패턴 데모 (API:*) ===');
+        const logger = new Develog({
+          enabledNamespaces: ['API:*'],
+        });
+
+        const apiLogger = logger.namespace('API');
+        const userApiLogger = apiLogger.namespace('User');
+        const productApiLogger = apiLogger.namespace('Product');
+        const dbLogger = logger.namespace('DB');
+
+        apiLogger.log('✅ API 로그');
+        userApiLogger.log('✅ API:User 로그');
+        productApiLogger.log('✅ API:Product 로그');
+        dbLogger.log('❌ DB 로그는 숨겨집니다');
+        develog.info('✅ API로 시작하는 모든 네임스페이스가 출력되었습니다.');
+      };
+
+      window.testNamespaceHierarchy = () => {
+        develog.info('=== 계층 구조 데모 ===');
+        const logger = new Develog();
+
+        const apiLogger = logger.namespace('API');
+        const userApiLogger = apiLogger.namespace('User');
+        const authUserApiLogger = userApiLogger.namespace('Auth');
+
+        apiLogger.log('Level 1: API');
+        userApiLogger.log('Level 2: API:User');
+        authUserApiLogger.log('Level 3: API:User:Auth');
+        develog.info('✅ 계층적 네임스페이스 구조가 출력되었습니다.');
+      };
+
+      window.testNamespaceWithTimestamp = () => {
+        develog.info('=== 네임스페이스 + 타임스탬프 통합 데모 ===');
+        const logger = new Develog({
+          showTimestamp: true,
+          timestampFormat: 'time',
+          enabledNamespaces: ['API:*'],
+        });
+
+        const apiLogger = logger.namespace('API');
+        const userLogger = apiLogger.namespace('User');
+
+        apiLogger.log('타임스탬프와 네임스페이스가 함께 표시됩니다');
+        userLogger.info('API:User 로그에도 타임스탬프가 포함됩니다');
+        develog.info('✅ 네임스페이스와 타임스탬프가 통합되어 출력되었습니다.');
       };
 
       // 초기 메시지

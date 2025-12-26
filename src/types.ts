@@ -51,6 +51,21 @@ export interface LoggerOptions {
    * @default 'time'
    */
   timestampFormat?: TimestampFormat;
+
+  /**
+   * 활성화할 네임스페이스 목록
+   * - 문자열 배열: 정확한 매칭 ['API', 'DB']
+   * - 와일드카드 지원: ['API:*', 'DB']
+   * - '*'는 모든 네임스페이스 활성화
+   * @default undefined (모든 네임스페이스 활성화)
+   */
+  enabledNamespaces?: string[];
+
+  /**
+   * 내부 전용: 현재 네임스페이스 이름
+   * @internal
+   */
+  _namespaceName?: string;
 }
 
 /**
