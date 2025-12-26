@@ -240,6 +240,15 @@ pnpm install
 # Development mode (watch)
 pnpm dev
 
+# Run tests
+pnpm test
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Lint code
+pnpm lint
+
 # Build
 pnpm build
 
