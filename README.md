@@ -1,464 +1,63 @@
 # develog
 
-A lightweight frontend logger that runs only in local/dev environments.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![npm version](https://img.shields.io/npm/v/develog.svg)](https://www.npmjs.com/package/develog)
 
-브라우저의 hostname 또는 IP를 감지하여 실행 환경을 자동으로 판별하고, dev/stage 및 local 환경에서만 로깅을 활성화하는 TypeScript 기반 경량 로거 라이브러리입니다.
+> A lightweight frontend logger that runs only in local/dev environments
 
-## Features
+A smart logging library that automatically detects the environment based on the browser's hostname and outputs logs only in development environments.
 
-- 자동 환경 감지: 브라우저의 hostname/IP로 실행 환경 자동 판별
-- 선택적 로깅: dev/stage/local 환경에서만 로깅 활성화 (프로덕션에서는 자동 비활성화)
-- 네임스페이스 & 필터링: 로그를 카테고리별로 분류하고 선택적으로 활성화 (와일드카드 패턴 지원)
-- 타임스탬프: 4가지 포맷으로 로그에 시간 정보 추가 (time, datetime, iso, ms)
-- 풍부한 API: console의 모든 기능 지원 (log, info, warn, error, debug, group, table 등)
-- 경량: 의존성 없는 순수 TypeScript 구현
-- 커스터마이징: 환경 패턴, prefix, 활성화 환경 등 유연한 설정
-- 범용성: React, Vue, Angular 등 모든 프론트엔드 프레임워크와 호환
+## Documentation
 
-## Installation
-
-```bash
-npm install develog
-# or
-yarn add develog
-# or
-pnpm add develog
-```
+- [English Documentation](./docs/README.en.md)
+- [한국어 문서](./docs/README.ko.md)
 
 ## Quick Start
+
+### Installation
+
+```bash
+# npm
+npm install develog
+
+# yarn
+yarn add develog
+
+# pnpm
+pnpm add develog
+```
 
 ### Basic Usage
 
 ```typescript
 import { develog } from 'develog';
 
-// 환경이 자동으로 감지되고, local/dev/stage에서만 로그가 출력됩니다
-develog.log('안녕하세요!');
-develog.info('정보 메시지');
-develog.warn('경고 메시지');
-develog.error('에러 메시지');
-develog.debug('디버그 정보');
+develog.log('This log appears only in development environments');
+develog.info('Info message');
+develog.warn('Warning message');
+develog.error('Error message');
 ```
 
-### 커스텀 인스턴스
-
-```typescript
-import { Develog } from 'develog';
-
-const logger = new Develog({
-  prefix: '[MyApp]',
-  enabledEnvironments: ['local', 'dev', 'stage'],
-  customHostnamePatterns: {
-    dev: /^dev\./,
-    stage: /^staging\./,
-  },
-});
-
-logger.log('커스텀 로거 사용');
-```
-
-## Environment Detection
-
-develog는 다음과 같이 환경을 자동으로 감지합니다:
-
-| 환경           | 기본 패턴                                                    | 예시                                        |
-| -------------- | ------------------------------------------------------------ | ------------------------------------------- |
-| **local**      | `localhost`, `127.0.0.1`, `0.0.0.0`, `::1`                   | `localhost:3000`                            |
-| **dev**        | `dev.` 또는 `development.`를 포함 (서브도메인 중간 가능)     | `dev.example.com`, `www.dev.example.com`    |
-| **stage**      | `stage.` 또는 `staging.`을 포함 (서브도메인 중간 가능)       | `stage.example.com`, `www.stage.example.kr` |
-| **production** | `prod.`, `production.`, `www.`를 포함 (서브도메인 중간 가능) | `www.example.com`, `www.prod.example.kr`    |
-
-> **참고**: dev, stage, production 모두 도메인 시작뿐만 아니라 서브도메인 중간에 위치해도 인식됩니다.
-> 예: `www.stage.example.kr`, `www.prod.example.kr`, `api.development.company.io`
-
-## API Reference
-
-### Logging Methods
-
-```typescript
-develog.log(...args: unknown[]): void
-develog.info(...args: unknown[]): void
-develog.warn(...args: unknown[]): void
-develog.error(...args: unknown[]): void
-develog.debug(...args: unknown[]): void
-```
-
-### Group Logging
-
-```typescript
-develog.group(label?: string): void
-develog.groupCollapsed(label?: string): void
-develog.groupEnd(): void
-```
-
-Example:
-
-```typescript
-develog.group('사용자 정보');
-develog.log('이름: 홍길동');
-develog.log('이메일: hong@example.com');
-develog.groupEnd();
-```
-
-### Advanced Features
-
-```typescript
-// 테이블 출력
-develog.table(data: unknown): void
-
-// 시간 측정
-develog.time(label: string): void
-develog.timeEnd(label: string): void
-
-// 카운트
-develog.count(label?: string): void
-develog.countReset(label?: string): void
-
-// 콘솔 지우기
-develog.clear(): void
-```
-
-Example:
-
-```typescript
-// 시간 측정
-develog.time('API 호출');
-await fetchData();
-develog.timeEnd('API 호출');
-
-// 테이블 출력
-const users = [
-  { id: 1, name: '김철수' },
-  { id: 2, name: '이영희' },
-];
-develog.table(users);
-```
-
-### Configuration Options
-
-```typescript
-interface LoggerOptions {
-  // 로깅이 활성화될 환경 (기본값: ['local', 'dev', 'stage'])
-  enabledEnvironments?: Environment[];
-
-  // 커스텀 hostname 패턴
-  customHostnamePatterns?: {
-    [key in Environment]?: RegExp;
-  };
-
-  // 로그 prefix (기본값: '[develog]')
-  prefix?: string;
-
-  // 강제로 환경 설정 (자동 감지 무시)
-  forceEnvironment?: Environment;
-
-  // 타임스탬프 표시 여부 (기본값: false)
-  showTimestamp?: boolean;
-
-  // 타임스탬프 포맷 (기본값: 'time')
-  // - 'time': HH:MM:SS
-  // - 'datetime': YYYY-MM-DD HH:MM:SS
-  // - 'iso': ISO 8601 형식
-  // - 'ms': Unix timestamp (밀리초)
-  timestampFormat?: 'time' | 'datetime' | 'iso' | 'ms';
-
-  // 활성화할 네임스페이스 목록
-  // - ['API', 'DB']: API와 DB 네임스페이스만 활성화
-  // - ['API:*']: API로 시작하는 모든 네임스페이스 활성화 (와일드카드)
-  // - ['*']: 모든 네임스페이스 활성화
-  // - undefined 또는 []: 모든 네임스페이스 활성화 (기본값)
-  enabledNamespaces?: string[];
-}
-```
-
-### Timestamp Support
-
-로그에 타임스탬프를 추가할 수 있습니다:
-
-```typescript
-// 기본 time 포맷 (HH:MM:SS)
-const logger = new Develog({
-  showTimestamp: true,
-});
-logger.log('안녕하세요');
-// [develog] [15:30:45] 안녕하세요
-
-// datetime 포맷 (YYYY-MM-DD HH:MM:SS)
-const logger = new Develog({
-  showTimestamp: true,
-  timestampFormat: 'datetime',
-});
-logger.info('정보 메시지');
-// [develog] [2025-12-26 15:30:45] 정보 메시지
-
-// ISO 8601 포맷
-const logger = new Develog({
-  showTimestamp: true,
-  timestampFormat: 'iso',
-});
-logger.warn('경고');
-// [develog] [2025-12-26T15:30:45.123Z] 경고
-
-// Unix timestamp (밀리초)
-const logger = new Develog({
-  showTimestamp: true,
-  timestampFormat: 'ms',
-});
-logger.error('에러');
-// [develog] [1735226445123] 에러
-```
-
-### Namespace & Filtering
-
-네임스페이스를 사용하여 로그를 카테고리별로 분류하고, 필요한 로그만 선택적으로 활성화할 수 있습니다:
-
-```typescript
-import { Develog } from 'develog';
-
-// 기본 네임스페이스 사용
-const logger = new Develog();
-
-const apiLogger = logger.namespace('API');
-const dbLogger = logger.namespace('DB');
-const cacheLogger = logger.namespace('Cache');
-
-apiLogger.log('API 요청 시작'); // [develog]:API API 요청 시작
-dbLogger.log('DB 쿼리 실행'); // [develog]:DB DB 쿼리 실행
-cacheLogger.log('캐시 조회'); // [develog]:Cache 캐시 조회
-
-// 특정 네임스페이스만 활성화
-const logger = new Develog({
-  enabledNamespaces: ['API', 'DB'], // Cache는 비활성화
-});
-
-const apiLogger = logger.namespace('API');
-const dbLogger = logger.namespace('DB');
-const cacheLogger = logger.namespace('Cache');
-
-apiLogger.log('보임'); // [develog]:API 보임
-dbLogger.log('보임'); // [develog]:DB 보임
-cacheLogger.log('숨김'); // 출력되지 않음
-
-// 와일드카드 패턴 사용
-const logger = new Develog({
-  enabledNamespaces: ['API:*'], // API로 시작하는 모든 네임스페이스
-});
-
-const apiLogger = logger.namespace('API');
-const userApiLogger = apiLogger.namespace('User'); // API:User
-const productApiLogger = apiLogger.namespace('Product'); // API:Product
-const dbLogger = logger.namespace('DB');
-
-apiLogger.log('보임'); // [develog]:API 보임
-userApiLogger.log('보임'); // [develog]:API:User 보임
-productApiLogger.log('보임'); // [develog]:API:Product 보임
-dbLogger.log('숨김'); // 출력되지 않음
-
-// 모든 네임스페이스 활성화
-const logger = new Develog({
-  enabledNamespaces: ['*'],
-});
-
-// 계층 구조 지원
-const logger = new Develog();
-const apiLogger = logger.namespace('API');
-const userApiLogger = apiLogger.namespace('User');
-const productApiLogger = apiLogger.namespace('Product');
-
-userApiLogger.log('사용자 조회'); // [develog]:API:User 사용자 조회
-productApiLogger.log('상품 조회'); // [develog]:API:Product 상품 조회
-```
-
-**네임스페이스 사용 시나리오:**
-
-```typescript
-// 디버깅 시 특정 모듈만 활성화
-const logger = new Develog({
-  enabledNamespaces: ['API'], // API 로그만 보기
-});
-
-// 여러 모듈 동시 활성화
-const logger = new Develog({
-  enabledNamespaces: ['API', 'DB', 'Cache'],
-});
-
-// 와일드카드로 패턴 매칭
-const logger = new Develog({
-  enabledNamespaces: ['API:*'], // API 하위 모든 네임스페이스
-});
-
-// 타임스탬프와 함께 사용
-const logger = new Develog({
-  showTimestamp: true,
-  timestampFormat: 'time',
-  enabledNamespaces: ['API:*'],
-});
-
-const apiLogger = logger.namespace('API');
-const userLogger = apiLogger.namespace('User');
-userLogger.log('요청 처리');
-// [develog]:API:User [15:30:45] 요청 처리
-```
-
-## Examples
-
-### React
-
-```typescript
-import { develog } from 'develog';
-import { useEffect } from 'react';
-
-function App() {
-  useEffect(() => {
-    develog.info('App 컴포넌트 마운트됨');
-
-    return () => {
-      develog.info('App 컴포넌트 언마운트됨');
-    };
-  }, []);
-
-  const handleClick = async () => {
-    develog.time('API 호출');
-    try {
-      const data = await fetchData();
-      develog.log('데이터:', data);
-    } catch (error) {
-      develog.error('에러:', error);
-    } finally {
-      develog.timeEnd('API 호출');
-    }
-  };
-
-  return <button onClick={handleClick}>클릭</button>;
-}
-```
-
-### Vue
-
-```typescript
-import { develog } from 'develog';
-import { onMounted } from 'vue';
-
-export default {
-  setup() {
-    onMounted(() => {
-      develog.info('컴포넌트 마운트됨');
-    });
-
-    const handleSubmit = () => {
-      develog.group('폼 제출');
-      develog.log('검증 시작...');
-      // 폼 처리 로직
-      develog.groupEnd();
-    };
-
-    return { handleSubmit };
-  },
-};
-```
-
-### API 호출 로깅
-
-```typescript
-import { Develog } from 'develog';
-
-const apiLogger = new Develog({ prefix: '[API]' });
-
-async function fetchUser(id: string) {
-  apiLogger.time(`fetchUser-${id}`);
-  apiLogger.log('요청:', { id });
-
-  try {
-    const response = await fetch(`/api/users/${id}`);
-    const user = await response.json();
-    apiLogger.info('응답:', user);
-    return user;
-  } catch (error) {
-    apiLogger.error('실패:', error);
-    throw error;
-  } finally {
-    apiLogger.timeEnd(`fetchUser-${id}`);
-  }
-}
-```
-
-### 네임스페이스를 활용한 모듈별 로깅
-
-```typescript
-import { Develog } from 'develog';
-
-// 디버깅 시 API 로그만 활성화
-const logger = new Develog({
-  enabledNamespaces: ['API:*'], // API 하위 모든 네임스페이스만 활성화
-  showTimestamp: true,
-});
-
-// API 모듈
-const apiLogger = logger.namespace('API');
-const userApiLogger = apiLogger.namespace('User');
-const productApiLogger = apiLogger.namespace('Product');
-
-// DB 모듈
-const dbLogger = logger.namespace('DB');
-const queryLogger = dbLogger.namespace('Query');
-
-// Cache 모듈
-const cacheLogger = logger.namespace('Cache');
-
-// 사용 예시
-async function getUser(id: string) {
-  userApiLogger.log('사용자 조회 시작', { id });
-
-  // DB 로그는 출력되지 않음 (enabledNamespaces: ['API:*'])
-  queryLogger.log('SELECT * FROM users WHERE id = ?', id);
-
-  const cachedUser = getCachedUser(id);
-  if (cachedUser) {
-    cacheLogger.log('캐시 히트', { id }); // 출력되지 않음
-    return cachedUser;
-  }
-
-  const user = await fetchUserFromDB(id);
-  userApiLogger.info('사용자 조회 완료', user); // ✅ 출력됨
-  return user;
-}
-
-// 프로덕션 배포 시: enabledNamespaces를 빈 배열로 설정하거나
-// 환경 변수로 관리하여 선택적 로깅 가능
-const prodLogger = new Develog({
-  enabledEnvironments: ['local', 'dev'], // 프로덕션에서는 자동 비활성화
-  enabledNamespaces: process.env.DEBUG_NAMESPACES?.split(',') || [],
-});
-```
-
-## Development
-
-```bash
-# Install dependencies
-pnpm install
-
-# Development mode (watch)
-pnpm dev
-
-# Run tests
-pnpm test
-
-# Run tests with coverage
-pnpm test:coverage
-
-# Lint code
-pnpm lint
-
-# Build
-pnpm build
-
-# Type check
-pnpm type-check
-
-# Format code
-pnpm format
-```
+## Features
+
+- **Automatic Environment Detection** - Based on hostname patterns
+- **Namespace Support** - Separate logs by module
+- **Timestamp Support** - 4 format options
+- **TypeScript Support** - Full type safety
+- **Zero Dependencies** - Lightweight package
+- **Production Safe** - Automatically disabled in production
+
+## Links
+
+- [GitHub Repository](https://github.com/junjuny0227/develog)
+- [npm Package](https://www.npmjs.com/package/develog)
+- [Issues](https://github.com/junjuny0227/develog/issues)
 
 ## License
 
-MIT © [junjuny](https://github.com/junjuny0227)
+MIT License - See [LICENSE.md](LICENSE.md)
+
+## Author
+
+**junjuny** - [@junjuny0227](https://github.com/junjuny0227)
