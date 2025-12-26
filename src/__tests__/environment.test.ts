@@ -46,6 +46,16 @@ describe('detectEnvironment', () => {
       window.location.hostname = 'development.myapp.io';
       expect(detectEnvironment()).toBe('dev');
     });
+
+    it('서브도메인 중간에 dev가 있어도 감지해야 함', () => {
+      window.location.hostname = 'www.dev.example.com';
+      expect(detectEnvironment()).toBe('dev');
+    });
+
+    it('서브도메인 중간에 development가 있어도 감지해야 함', () => {
+      window.location.hostname = 'api.development.company.com';
+      expect(detectEnvironment()).toBe('dev');
+    });
   });
 
   describe('Stage 환경 감지', () => {
@@ -56,6 +66,16 @@ describe('detectEnvironment', () => {
 
     it('staging. 접두사를 stage로 감지해야 함', () => {
       window.location.hostname = 'staging.myapp.io';
+      expect(detectEnvironment()).toBe('stage');
+    });
+
+    it('서브도메인 중간에 stage가 있어도 감지해야 함', () => {
+      window.location.hostname = 'www.stage.example.com';
+      expect(detectEnvironment()).toBe('stage');
+    });
+
+    it('서브도메인 중간에 staging이 있어도 감지해야 함', () => {
+      window.location.hostname = 'api.staging.company.com';
       expect(detectEnvironment()).toBe('stage');
     });
   });
@@ -73,6 +93,15 @@ describe('detectEnvironment', () => {
 
     it('production. 접두사를 production으로 감지해야 함', () => {
       window.location.hostname = 'production.example.com';
+      expect(detectEnvironment()).toBe('production');
+    });
+    it('서브도메인 중간에 prod가 있어도 감지해야 함', () => {
+      window.location.hostname = 'www.prod.example.com';
+      expect(detectEnvironment()).toBe('production');
+    });
+
+    it('서브도메인 중간에 production이 있어도 감지해야 함', () => {
+      window.location.hostname = 'api.production.company.com';
       expect(detectEnvironment()).toBe('production');
     });
   });

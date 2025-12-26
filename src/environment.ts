@@ -5,9 +5,9 @@ import type { Environment } from './types';
  */
 const DEFAULT_HOSTNAME_PATTERNS: Record<Environment, RegExp> = {
   local: /^(localhost|127\.0\.0\.1|0\.0\.0\.0|::1|\[::1\])/,
-  dev: /^(dev|development)\./,
-  stage: /^(stage|staging)\./,
-  production: /^(prod|production|www)\./,
+  dev: /(^|\.)(dev|development)\./,
+  stage: /(^|\.)(stage|staging)\./,
+  production: /(^|\.)(prod|production|www)\./,
   unknown: /.*/,
 };
 

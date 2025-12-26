@@ -61,12 +61,15 @@ logger.log('커스텀 로거 사용');
 
 develog는 다음과 같이 환경을 자동으로 감지합니다:
 
-| 환경           | 기본 패턴                                  | 예시                  |
-| -------------- | ------------------------------------------ | --------------------- |
-| **local**      | `localhost`, `127.0.0.1`, `0.0.0.0`, `::1` | `localhost:3000`      |
-| **dev**        | `dev.`, `development.`로 시작              | `dev.example.com`     |
-| **stage**      | `stage.`, `staging.`로 시작                | `staging.example.com` |
-| **production** | `prod.`, `production.`, `www.`로 시작      | `www.example.com`     |
+| 환경           | 기본 패턴                                                    | 예시                                        |
+| -------------- | ------------------------------------------------------------ | ------------------------------------------- |
+| **local**      | `localhost`, `127.0.0.1`, `0.0.0.0`, `::1`                   | `localhost:3000`                            |
+| **dev**        | `dev.` 또는 `development.`를 포함 (서브도메인 중간 가능)     | `dev.example.com`, `www.dev.example.com`    |
+| **stage**      | `stage.` 또는 `staging.`을 포함 (서브도메인 중간 가능)       | `stage.example.com`, `www.stage.example.kr` |
+| **production** | `prod.`, `production.`, `www.`를 포함 (서브도메인 중간 가능) | `www.example.com`, `www.prod.example.kr`    |
+
+> **참고**: dev, stage, production 모두 도메인 시작뿐만 아니라 서브도메인 중간에 위치해도 인식됩니다.
+> 예: `www.stage.example.kr`, `www.prod.example.kr`, `api.development.company.io`
 
 ## API Reference
 
