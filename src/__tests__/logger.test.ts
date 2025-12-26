@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { Develog, develog } from './logger';
+import { Develog, develog } from '../logger';
 
 describe('Develog', () => {
   let consoleSpy: {

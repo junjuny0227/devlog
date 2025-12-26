@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { detectEnvironment } from './environment';
+import { detectEnvironment } from '../environment';
 
 describe('detectEnvironment', () => {
   beforeEach(() => {
