@@ -146,7 +146,54 @@ interface LoggerOptions {
 
   // 강제로 환경 설정 (자동 감지 무시)
   forceEnvironment?: Environment;
+
+  // 타임스탬프 표시 여부 (기본값: false)
+  showTimestamp?: boolean;
+
+  // 타임스탬프 포맷 (기본값: 'time')
+  // - 'time': HH:MM:SS
+  // - 'datetime': YYYY-MM-DD HH:MM:SS
+  // - 'iso': ISO 8601 형식
+  // - 'ms': Unix timestamp (밀리초)
+  timestampFormat?: 'time' | 'datetime' | 'iso' | 'ms';
 }
+```
+
+### Timestamp Support
+
+로그에 타임스탬프를 추가할 수 있습니다:
+
+```typescript
+// 기본 time 포맷 (HH:MM:SS)
+const logger = new Develog({
+  showTimestamp: true,
+});
+logger.log('안녕하세요');
+// [develog] [15:30:45] 안녕하세요
+
+// datetime 포맷 (YYYY-MM-DD HH:MM:SS)
+const logger = new Develog({
+  showTimestamp: true,
+  timestampFormat: 'datetime',
+});
+logger.info('정보 메시지');
+// [develog] [2025-12-26 15:30:45] 정보 메시지
+
+// ISO 8601 포맷
+const logger = new Develog({
+  showTimestamp: true,
+  timestampFormat: 'iso',
+});
+logger.warn('경고');
+// [develog] [2025-12-26T15:30:45.123Z] 경고
+
+// Unix timestamp (밀리초)
+const logger = new Develog({
+  showTimestamp: true,
+  timestampFormat: 'ms',
+});
+logger.error('에러');
+// [develog] [1735226445123] 에러
 ```
 
 ## Examples

@@ -4,6 +4,11 @@
 export type Environment = 'local' | 'dev' | 'stage' | 'production' | 'unknown';
 
 /**
+ * 타임스탬프 포맷 타입
+ */
+export type TimestampFormat = 'time' | 'datetime' | 'iso' | 'ms';
+
+/**
  * Logger 설정 옵션
  */
 export interface LoggerOptions {
@@ -30,6 +35,22 @@ export interface LoggerOptions {
    * 강제로 환경을 설정 (자동 감지 무시)
    */
   forceEnvironment?: Environment;
+
+  /**
+   * 타임스탬프 표시 여부
+   * @default false
+   */
+  showTimestamp?: boolean;
+
+  /**
+   * 타임스탬프 포맷
+   * - 'time': HH:MM:SS
+   * - 'datetime': YYYY-MM-DD HH:MM:SS
+   * - 'iso': ISO 8601 형식
+   * - 'ms': Unix timestamp (밀리초)
+   * @default 'time'
+   */
+  timestampFormat?: TimestampFormat;
 }
 
 /**

@@ -89,6 +89,14 @@
       <button onclick="testForcedProduction()">Production 강제 설정</button>
     </div>
 
+    <div class="section">
+      <h2>타임스탬프 & 포맷팅</h2>
+      <button onclick="testTimestampTime()">time 포맷 (HH:MM:SS)</button>
+      <button onclick="testTimestampDatetime()">datetime 포맷</button>
+      <button onclick="testTimestampIso()">iso 포맷</button>
+      <button onclick="testTimestampMs()">ms 포맷</button>
+    </div>
+
     <script type="module">
       // develog를 전역으로 사용할 수 있도록 설정
       // 빌드된 ESM 파일을 import
@@ -190,6 +198,42 @@
         });
         prodLogger.warn('이 메시지는 production 환경으로 강제 설정되어 보이지 않습니다.');
         develog.info('위 메시지가 보이지 않는다면 정상입니다. (production은 비활성화됨)');
+      };
+
+      window.testTimestampTime = () => {
+        const logger = new Develog({
+          showTimestamp: true,
+          timestampFormat: 'time',
+        });
+        logger.log('time 포맷 - HH:MM:SS');
+        logger.info('현재 시간이 prefix에 표시됩니다.');
+      };
+
+      window.testTimestampDatetime = () => {
+        const logger = new Develog({
+          showTimestamp: true,
+          timestampFormat: 'datetime',
+        });
+        logger.log('datetime 포맷 - YYYY-MM-DD HH:MM:SS');
+        logger.info('날짜와 시간이 모두 표시됩니다.');
+      };
+
+      window.testTimestampIso = () => {
+        const logger = new Develog({
+          showTimestamp: true,
+          timestampFormat: 'iso',
+        });
+        logger.log('iso 포맷 - ISO 8601 표준');
+        logger.info('국제 표준 시간 형식입니다.');
+      };
+
+      window.testTimestampMs = () => {
+        const logger = new Develog({
+          showTimestamp: true,
+          timestampFormat: 'ms',
+        });
+        logger.log('ms 포맷 - Unix timestamp (밀리초)');
+        logger.info('1970년 1월 1일부터의 밀리초입니다.');
       };
 
       // 초기 메시지

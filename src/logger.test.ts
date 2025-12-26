@@ -371,4 +371,101 @@ describe('Develog', () => {
       expect(consoleSpy.log).toHaveBeenCalledWith('[develog]', complex);
     });
   });
+
+  describe('타임스탬프', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2025-12-26T15:30:45.123Z'));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('showTimestamp가 false일 때 타임스탬프를 포함하지 않아야 함', () => {
+      const logger = new Develog({
+        forceEnvironment: 'local',
+        showTimestamp: false,
+      });
+      logger.log('test');
+
+      expect(consoleSpy.log).toHaveBeenCalledWith('[develog]', 'test');
+    });
+
+    it('showTimestamp가 true일 때 기본 time 포맷으로 타임스탬프를 포함해야 함', () => {
+      const logger = new Develog({
+        forceEnvironment: 'local',
+        showTimestamp: true,
+      });
+      logger.log('test');
+
+      const calls = consoleSpy.log.mock.calls as unknown[][];
+      const prefix = calls[0]?.[0] as string;
+      expect(prefix).toMatch(/^\[develog\] \[\d{2}:\d{2}:\d{2}\]$/);
+    });
+
+    it('datetime 포맷으로 타임스탬프를 포함해야 함', () => {
+      const logger = new Develog({
+        forceEnvironment: 'local',
+        showTimestamp: true,
+        timestampFormat: 'datetime',
+      });
+      logger.log('test');
+
+      const calls = consoleSpy.log.mock.calls as unknown[][];
+      const prefix = calls[0]?.[0] as string;
+      expect(prefix).toMatch(/^\[develog\] \[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]$/);
+    });
+
+    it('iso 포맷으로 타임스탬프를 포함해야 함', () => {
+      const logger = new Develog({
+        forceEnvironment: 'local',
+        showTimestamp: true,
+        timestampFormat: 'iso',
+      });
+      logger.log('test');
+
+      const calls = consoleSpy.log.mock.calls as unknown[][];
+      const prefix = calls[0]?.[0] as string;
+      expect(prefix).toBe('[develog] [2025-12-26T15:30:45.123Z]');
+    });
+
+    it('ms 포맷으로 타임스탬프를 포함해야 함', () => {
+      const logger = new Develog({
+        forceEnvironment: 'local',
+        showTimestamp: true,
+        timestampFormat: 'ms',
+      });
+      logger.log('test');
+
+      const calls = consoleSpy.log.mock.calls as unknown[][];
+      const prefix = calls[0]?.[0] as string;
+      expect(prefix).toMatch(/^\[develog\] \[\d+\]$/);
+    });
+
+    it('그룹 로깅에도 타임스탬프가 적용되어야 함', () => {
+      const logger = new Develog({
+        forceEnvironment: 'local',
+        showTimestamp: true,
+        timestampFormat: 'time',
+      });
+      logger.group('Group');
+
+      const calls = consoleSpy.group.mock.calls as unknown[][];
+      const prefix = calls[0]?.[0] as string;
+      expect(prefix).toMatch(/^\[develog\] \[\d{2}:\d{2}:\d{2}\] Group$/);
+    });
+
+    it('time/timeEnd에 타임스탬프가 적용되어야 함', () => {
+      const logger = new Develog({
+        forceEnvironment: 'local',
+        showTimestamp: true,
+      });
+      logger.time('timer');
+
+      const calls = consoleSpy.time.mock.calls as unknown[][];
+      const prefix = calls[0]?.[0] as string;
+      expect(prefix).toMatch(/^\[develog\] \[\d{2}:\d{2}:\d{2}\] timer$/);
+    });
+  });
 });

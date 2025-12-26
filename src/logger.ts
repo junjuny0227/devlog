@@ -1,5 +1,6 @@
 import { detectEnvironment } from './environment';
-import type { Environment, LoggerOptions, LogLevel } from './types';
+import type { Environment, LoggerOptions, LogLevel, TimestampFormat } from './types';
+import { formatTimestamp } from './utils';
 
 /**
  * develog - 브라우저 환경 기반 로거
@@ -9,6 +10,8 @@ export class Develog {
   private readonly enabledEnvironments: Set<Environment>;
   private readonly prefix: string;
   private readonly isEnabled: boolean;
+  private readonly showTimestamp: boolean;
+  private readonly timestampFormat: TimestampFormat;
 
   constructor(options: LoggerOptions = {}) {
     const {
@@ -16,6 +19,8 @@ export class Develog {
       customHostnamePatterns,
       prefix = '[develog]',
       forceEnvironment,
+      showTimestamp = false,
+      timestampFormat = 'time',
     } = options;
 
     // 환경 감지
@@ -23,6 +28,8 @@ export class Develog {
     this.enabledEnvironments = new Set(enabledEnvironments);
     this.prefix = prefix;
     this.isEnabled = this.enabledEnvironments.has(this.environment);
+    this.showTimestamp = showTimestamp;
+    this.timestampFormat = timestampFormat;
   }
 
   /**
@@ -170,14 +177,27 @@ export class Develog {
     if (!this.isEnabled) return;
 
     const consoleMethod = console[level] || console.log;
-    consoleMethod(this.prefix, ...args);
+    const prefixWithTimestamp = this.getPrefixWithTimestamp();
+    consoleMethod(prefixWithTimestamp, ...args);
   }
 
   /**
    * 메시지에 prefix 추가
    */
   private formatMessage(message: string): string {
-    return `${this.prefix} ${message}`;
+    const prefixWithTimestamp = this.getPrefixWithTimestamp();
+    return `${prefixWithTimestamp} ${message}`;
+  }
+
+  /**
+   * 타임스탬프가 포함된 prefix 반환
+   */
+  private getPrefixWithTimestamp(): string {
+    if (!this.showTimestamp) {
+      return this.prefix;
+    }
+    const timestamp = formatTimestamp(this.timestampFormat);
+    return `${this.prefix} [${timestamp}]`;
   }
 }
 
