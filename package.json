@@ -1,6 +1,6 @@
 {
   "name": "develog",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight frontend logger that runs only in local/dev environments.",
   "license": "MIT",
   "author": "junjuny",
