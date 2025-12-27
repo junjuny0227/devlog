@@ -1,7 +1,9 @@
 # develog
 
+[![npm downloads](https://img.shields.io/npm/dt/develog.svg)](https://www.npmjs.com/package/develog)
+[![GitHub repo size](https://img.shields.io/github/repo-size/junjuny0227/develog.svg)](https://github.com/junjuny0227/develog)
+[![npm version](https://img.shields.io/npm/v/develog.svg)](https://www.npmjs.com/package/develog)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 
 > 개발/로컬 환경에서만 동작하는 경량 프론트엔드 로거
 
